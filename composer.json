@@ -1,0 +1,17 @@
+{
+    "name": "tobb10001/h4a-integration",
+    "description": "Interface for gathering data from handball4all.de, as well as displaying it.",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Tobb10001\\H4aIntegration\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tobias Fischer",
+            "email": "t7f2001@gmail.com"
+        }
+    ],
+    "require": {}
+}
