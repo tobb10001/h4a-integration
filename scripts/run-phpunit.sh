@@ -2,7 +2,7 @@
 
 ROOT=$(dirname $0)/..
 
-echo -n "Running tests... "
+echo -n "Running PHPUnit... "
 
 TEST_OUTPUT=$($ROOT/vendor/bin/phpunit tests)
 

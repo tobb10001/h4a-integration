@@ -21,5 +21,5 @@ trap _unstash EXIT
 
 # Run Tests
 
-./scripts/run-tests.sh
+./scripts/run-phpunit.sh
 ./scripts/run-phpstan.sh
