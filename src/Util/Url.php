@@ -19,6 +19,7 @@ abstract class Url {
             throw new InvalidUrlException("Wrong number of question makrs '?', exactly one expected");
         }
 
+        /* @phpstan-ignore-next-line */
         $query = substr($league_url, strpos($league_url, '?'));
         parse_str($query, $params);
 

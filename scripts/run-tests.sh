@@ -1,12 +1,14 @@
 #!/usr/bin/env sh
 
-DIR=$(dirname $0)
+ROOT=$(dirname $0)/..
 
-echo "Running tests.. "
-TEST_OUTPUT=$($DIR/../vendor/bin/phpunit tests)
+echo -n "Running tests... "
+
+TEST_OUTPUT=$($ROOT/vendor/bin/phpunit tests)
 
 if [ $? -ne 0 ]; then
   # Show full output
+  echo # missing newline
   echo "$TEST_OUTPUT"
 
   echo "Tests failed... Exiting with error."

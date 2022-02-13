@@ -1,19 +1,25 @@
 #!/usr/bin/env bash
 
+# Fail on error.
+
+set -e
+
+# Stash before running tests, s.th. only staged files are tested.
+
 STASH_NAME="pre-commit-$(date +%s)"
 
 git stash push -q --keep-index -m $STASH_NAME
 
+function _unstash() {
+    STASHES=$(git stash list | cut -d " " -f 4)
+    if [[ $STASHES == "$STASH_NAME" ]]; then
+        git stash pop -q
+    fi
+}
+
+trap _unstash EXIT
+
+# Run Tests
+
 ./scripts/run-tests.sh
-RESULT=$?
-
-STASHES=$(git stash list | cut -d " " -f 4)
-if [[ $STASHES == "$STASH_NAME" ]]; then
-    git stash pop -q
-fi
-
-if [ $RESULT -ne 0 ]; then
-    exit 1
-fi
-
-exit 0
+./scripts/run-phpstan.sh
