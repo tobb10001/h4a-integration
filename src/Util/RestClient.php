@@ -4,7 +4,7 @@ namespace Tobb10001\H4aIntegration\Util;
 
 use Tobb10001\H4aIntegration\Exceptions\InvalidUrlException;
 
-abstract class Url {
+abstract class RestClient {
 
     /**
      * Takes the URL, that a browswer-visitor would use to display a league with

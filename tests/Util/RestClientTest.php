@@ -3,12 +3,12 @@
 use PHPUnit\Framework\TestCase;
 
 use Tobb10001\H4aIntegration\Exceptions\InvalidUrlException;
-use Tobb10001\H4aIntegration\Util\Url;
+use Tobb10001\H4aIntegration\Util\RestClient;
 
 class UrlTest extends TestCase {
 
     function test_convert_league_url_valid() {
-        $api_url = Url::convert_league_url(
+        $api_url = RestClient::convert_league_url(
             "https://www.handball4all.de/home/portal/pfalz/#/league?ogId=171&lId=789012&tId=123456"
         );
 
@@ -20,17 +20,17 @@ class UrlTest extends TestCase {
 
     function test_convert_league_url_multiple_question_marks() {
         $this->expectException(InvalidUrlException::class);
-        Url::convert_league_url("https://www.handball4all.de/home/portal/pfalz/#/league?ogId=171?lId=789012&tId=123456");
+        RestClient::convert_league_url("https://www.handball4all.de/home/portal/pfalz/#/league?ogId=171?lId=789012&tId=123456");
     }
 
     function test_convert_league_url_missing_parameter() {
         $this->expectException(InvalidUrlException::class);
-        Url::convert_league_url(
+        RestClient::convert_league_url(
             "https://www.handball4all.de/home/portal/pfalz/#/league?ogId=171&lId=789012"
         );
 
         $this->expectException(InvalidUrlException::class);
-        Url::convert_league_url(
+        RestClient::convert_league_url(
             "https://www.handball4all.de/home/portal/pfalz/#/league?ogId=171&tId=123456"
         );
     }
