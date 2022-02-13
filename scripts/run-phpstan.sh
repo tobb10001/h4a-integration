@@ -9,7 +9,7 @@ PHPSTAN_OUTPUT=$($ROOT/vendor/bin/phpstan --no-progress --configuration=$ROOT/ph
 if [ $? -ne 0 ]; then
     # Show full output
     echo # missing newline
-    echo "$TEST_OUTPUT"
+    echo "$PHPSTAN_OUTPUT"
 
     echo "PHPStan-Analysis failed... Exiting with error."
     exit 1;
