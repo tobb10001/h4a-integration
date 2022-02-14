@@ -8,6 +8,9 @@ use PHPUnit\Framework\TestCase;
 use Tobb10001\H4aIntegration\Exceptions\InvalidUrlException;
 use Tobb10001\H4aIntegration\Exceptions\UnsuccessfulRequestException;
 
+/**
+ * @covers \Tobb10001\H4aIntegration\Util\RestClient
+ */
 class RestClientTest extends TestCase {
 
     use PHPMock;
