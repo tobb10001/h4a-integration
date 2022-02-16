@@ -1,3 +1,6 @@
 /vendor/
 .idea/
 .phpunit.cache
+
+# Have a space to do whatever you want.
+/misc
