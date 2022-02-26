@@ -23,7 +23,7 @@ class SqliteAdapter implements UpdaterInterface
      * The SQLite3 object is expected to be in an open state every time a
      * method of SqliteAdapter is called. Also, it is expected that exceptions
      * are disabled, since the return values of SQLite3-Methods are used to
-     * control transactions.
+     * cntrol transactions.
      * @param SQLite3 $db
      */
     public function __construct(SQLite3 $db)
@@ -63,14 +63,24 @@ class SqliteAdapter implements UpdaterInterface
     {
         $_ifNotExists = $ifNotExists ? "IF NOT EXISTS" : "";
         return <<<SQL
-			CREATE TABLE ${prefix}teams ${_ifNotExists} (
-				id INTEGER AUTO_INCREMENT PRIMARY KEY,
+			CREATE TABLE ${_ifNotExists} ${prefix}teams (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				internalName VARCHAR NOT NULL,
 				identificators VARCHAR NOT NULL,
 				leagueUrl VARCHAR NULL,
-				cupUrl VARCHAR NULL,
+				cupUrl VARCHAR NULL
 			);
 SQL;
+    }
+
+    /**
+     * Create the teams table.
+     * @param string $prefix Prefix to prepend to the table name.
+     * @param bool $ifNotExists Whether to use "IF NOT EXISTS" for safety.
+     */
+    private function createTableTeams(string $prefix, bool $ifNotExists): bool
+    {
+        return $this->db->exec(self::queryCreateTableTeams($prefix, $ifNotExists));
     }
 
     /**
@@ -82,9 +92,9 @@ SQL;
     {
         $_ifNotExists = $ifNotExists ? "IF NOT EXISTS" : "";
         return <<<SQL
-			CREATE TABLE ${prefix}leaguemetadata ${_ifNotExists} (
+			CREATE TABLE ${_ifNotExists} ${prefix}leaguemetadata (
 				teamid INTEGER NOT NULL,
-				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				name VARCHAR NOT NULL,
 				sname VARCHAR NOT NULL,
 				headline1 VARCHAR NOT NULL,
@@ -100,6 +110,16 @@ SQL;
     }
 
     /**
+     * Create the metadata table.
+     * @param string $prefix Prefix to prepend to the table name.
+     * @param bool $ifNotExists Whether to use "IF NOT EXISTS" for safety.
+     */
+    private function createTableLeagueMetadata(string $prefix, bool $ifNotExists): bool
+    {
+        return $this->db->exec(self::queryCreateTableLeagueMetadata($prefix, $ifNotExists));
+    }
+
+    /**
      * Construct the "CREATE TABLE" query for the games table.
      * @param string $prefix Prefix to prepend to the table name.
      * @param bool $ifNotExists Whether to use "IF NOT EXISTS" for safety.
@@ -108,9 +128,9 @@ SQL;
     {
         $_ifNotExists = $ifNotExists ? "IF NOT EXISTS" : "";
         return <<<SQL
-			CREATE TABLE ${prefix}games ${_ifNotExists} (
+			CREATE TABLE ${_ifNotExists} ${prefix}games (
 				metadataid INTEGER NOT NULL,
-				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				gID VARCHAR NOT NULL,
 				gNo VARCHAR NOT NULL,
 				live BOOLEAN NOT NULL,
@@ -138,10 +158,20 @@ SQL;
 				gReferee VARCHAR NOT NULL,
 				grobotextstate VARCHAR NOT NULL,
 				CONSTRAINT fk_metadata
-					FOREIGN KEY (teamid) REFERENCES ${prefix}metadata(id)
+					FOREIGN KEY (metadataid) REFERENCES ${prefix}metadata(id)
 					ON UPDATE CASCADE ON DELETE CASCADE
 			);
 SQL;
+    }
+
+    /**
+     * Create the games table.
+     * @param string $prefix Prefix to prepend to the table name.
+     * @param bool $ifNotExists Whether to use "IF NOT EXISTS" for safety.
+     */
+    private function createTableGames(string $prefix, bool $ifNotExists): bool
+    {
+        return $this->db->exec(self::queryCreateTableGames($prefix, $ifNotExists));
     }
 
     /**
@@ -153,7 +183,7 @@ SQL;
     {
         $_ifNotExists = $ifNotExists ? "IF NOT EXISTS" : "";
         return <<<SQL
-			CREATE TABLE ${prefix}games ${_ifNotExists} (
+			CREATE TABLE ${_ifNotExists} ${prefix}tabscores (
 				metadataid INTEGER NOT NULL,
 				tabScore INT NOT NULL,
 				tabTeamID VARCHAR NOT NULL,
@@ -172,10 +202,20 @@ SQL;
 				numGoalsShotperGame VARCHAR NOT NULL,
 				posCriterion VARCHAR NOT NULL,
 				CONSTRAINT fk_metadata
-					FOREIGN KEY (teamid) REFERENCES ${prefix}metadata(id)
+					FOREIGN KEY (metadataid) REFERENCES ${prefix}metadata(id)
 					ON UPDATE CASCADE ON DELETE CASCADE
 			);
 SQL;
+    }
+
+    /**
+     * Create the games table.
+     * @param string $prefix Prefix to prepend to the table name.
+     * @param bool $ifNotExists Whether to use "IF NOT EXISTS" for safety.
+     */
+    private function createTableTabScores(string $prefix, bool $ifNotExists): bool
+    {
+        return $this->db->exec(self::queryCreateTableTabScores($prefix, $ifNotExists));
     }
 
     /**
@@ -192,18 +232,10 @@ SQL;
         $this->db->exec("BEGIN;");
         // chained konjunction
         // if one of the exec()-calls (table creations) fail, the others won't be attempted
-        $result = $this->db->exec(
-            self::queryCreateTableTeams($prefix, $ifNotExists)
-        )
-        && $this->db->exec(
-            self::queryCreateTableLeagueMetadata($prefix, $ifNotExists)
-        )
-        && $this->db->exec(
-            self::queryCreateTableGames($prefix, $ifNotExists)
-        )
-        && $this->db->exec(
-            self::queryCreateTableTabScores($prefix, $ifNotExists)
-        );
+        $result = $this->createTableTeams($prefix, $ifNotExists)
+        && $this->createTableLeagueMetadata($prefix, $ifNotExists)
+        && $this->createTableGames($prefix, $ifNotExists)
+        && $this->createTableTabScores($prefix, $ifNotExists);
 
         if ($result) {
             $this->db->exec("COMMIT;");
