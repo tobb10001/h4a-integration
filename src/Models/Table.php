@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration\Models;
 
@@ -8,49 +10,56 @@ namespace Tobb10001\H4aIntegration\Models;
  * @implements \ArrayAccess<int, TabScore>
  * @implements \IteratorAggregate<int, TabScore>
  */
-class Table implements \ArrayAccess, \Countable, \IteratorAggregate {
+class Table implements \ArrayAccess, \Countable, \IteratorAggregate
+{
+    /** @var array<TabScore> $tabScores */
+    public array $tabScores;
 
-	/** @var array<TabScore> $tabScores */
-	public array $tabScores;
+    /**
+     * @param array<TabScore> $tabScores
+     */
+    public function __construct(array $tabScores)
+    {
+        $this->tabScores = $tabScores;
+    }
 
-	/**
-	 * @param array<TabScore> $tabScores
-	 */
-	function __construct(array $tabScores) {
-		$this->tabScores = $tabScores;
-	}
+    /* region Interface IteratorAggregate */
+    public function getIterator()
+    {
+        yield from $this->tabScores;
+    }
+    /* endregion */
 
-	/* region Interface IteratorAggregate */
-	function getIterator() {
-		yield from $this->tabScores;
-	}
-	/* endregion */
+    /* region Interface Array Access */
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->tabScores[] = $value;
+        } else {
+            $this->tabScores[$offset] = $value;
+        }
+    }
 
-	/* region Interface Array Access */
-	function offsetSet($offset, $value) {
-		if (is_null($offset)) {
-			$this->tabScores[] = $value;
-		} else {
-			$this->tabScores[$offset] = $value;
-		}
-	}
+    public function offsetExists($offset)
+    {
+        return isset($this->tabScores[$offset]);
+    }
 
-	function offsetExists($offset) {
-		return isset($this->tabScores[$offset]);
-	}
+    public function offsetUnset($offset)
+    {
+        unset($this->tabScores[$offset]);
+    }
 
-	function offsetUnset($offset) {
-		unset($this->tabScores[$offset]);
-	}
+    public function offsetGet($offset)
+    {
+        return isset($this->tabScores[$offset]) ? $this->tabScores[$offset] : null;
+    }
+    /* endregion */
 
-	function offsetGet($offset) {
-		return isset($this->tabScores[$offset]) ? $this->tabScores[$offset] : null;
-	}
-	/* endregion */
-
-	/* region Interface Countable */
-	function count() {
-		return count($this->tabScores);
-	}
-	/* endregion */
+    /* region Interface Countable */
+    public function count()
+    {
+        return count($this->tabScores);
+    }
+    /* endregion */
 }

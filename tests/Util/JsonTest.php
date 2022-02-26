@@ -10,14 +10,14 @@ use Tobb10001\H4aIntegration\Exceptions\UnsuccessfulRequestException;
 /**
  * @covers \Tobb10001\H4aIntegration\Util\Json
  */
-class JsonTest extends TestCase {
+class JsonTest extends TestCase
+{
+    public function testIntOrNull()
+    {
+        $this->assertNull(Json::intOrNull(" ", " "));
 
-	function test_int_or_null() {
+        $this->assertEquals(27, Json::intOrNull("27"));
 
-		$this->assertNull(Json::int_or_null(" ", " "));
-
-		$this->assertEquals(27, Json::int_or_null("27"));
-
-		$this->assertNull(Json::int_or_null("", [" ", ""]));
-	}
+        $this->assertNull(Json::intOrNull("", [" ", ""]));
+    }
 }
