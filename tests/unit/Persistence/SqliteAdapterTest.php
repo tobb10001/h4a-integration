@@ -49,4 +49,21 @@ class SqliteAdapterTest extends TestCase
         $this->assertTrue(self::tableExists("pf_games"));
         $this->assertTrue(self::tableExists("pf_tabscores"));
     }
+
+    public function testCreateTableRollback(): void
+    {
+        $mock = $this->createMock(SQLite3::class);
+
+        $mock->expects($this->exactly(3))
+             ->method("exec")
+             ->withConsecutive(
+                 ["BEGIN;"],
+                 [$this->stringContains("CREATE TABLE")],
+                 ["ROLLBACK;"]
+             )
+             ->willReturn(true, false, true);
+
+        $adapter = new SqliteAdapter($mock);
+        $this->assertFalse($adapter->createTables());
+    }
 }
