@@ -40,6 +40,9 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /* region Interface IteratorAggregate */
+    /**
+     * @codeCoverageIgnore
+     */
     public function getIterator()
     {
         yield from $this->tabScores;
@@ -47,6 +50,9 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /* endregion */
 
     /* region Interface Array Access */
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
@@ -56,16 +62,25 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetExists($offset)
     {
         return isset($this->tabScores[$offset]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetUnset($offset)
     {
         unset($this->tabScores[$offset]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetGet($offset)
     {
         return isset($this->tabScores[$offset]) ? $this->tabScores[$offset] : null;
@@ -73,6 +88,9 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /* endregion */
 
     /* region Interface Countable */
+    /**
+     * @codeCoverageIgnore
+     */
     public function count()
     {
         return count($this->tabScores);

@@ -57,6 +57,9 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     }
 
     /* region Interface Array Access */
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetSet($offset, $value)
     {
         if (is_null($offset)) {
@@ -66,16 +69,25 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetExists($offset)
     {
         return isset($this->games[$offset]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetUnset($offset)
     {
         unset($this->games[$offset]);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function offsetGet($offset)
     {
         return isset($this->games[$offset]) ? $this->games[$offset] : null;
@@ -83,6 +95,9 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /* endregion */
 
     /* region Interface Countable */
+    /**
+     * @codeCoverageIgnore
+     */
     public function count()
     {
         return count($this->games);
@@ -90,6 +105,9 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /* endregion */
 
     /* region Interface IteratorAggregate */
+    /**
+     * @codeCoverageIgnore
+     */
     public function getIterator()
     {
         yield from $this->games;

@@ -15,6 +15,7 @@ class LeagueDataTest extends TestCase
      * @covers Tobb10001\H4aIntegration\Models\LeagueMetadata
      * @covers Tobb10001\H4aIntegration\Models\TabScore
      * @covers Tobb10001\H4aIntegration\Models\Table
+     * @uses Tobb10001\H4aIntegration\Util\Json
      */
     public function testConstructLeagueDataFromJson(): void
     {
