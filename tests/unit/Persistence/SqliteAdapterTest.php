@@ -7,6 +7,10 @@ namespace Tobb10001\H4aIntegration\Persistence;
 use PHPUnit\Framework\TestCase;
 
 use SQLite3;
+use SQLite3Result;
+
+use Tobb10001\H4aIntegration\Exceptions\PersistenceError;
+use Tobb10001\H4aIntegration\Models\Team;
 
 /**
  * @covers Tobb10001\H4aIntegration\Persistence\SqliteAdapter
@@ -33,6 +37,50 @@ class SqliteAdapterTest extends TestCase
         // emulate numRows != 0
         // https://www.php.net/manual/en/class.sqlite3result.php#94873
         return (bool) $res->numColumns() && $res->columnType(0) != SQLITE3_NULL;
+    }
+
+    public function testGetTeams(): void
+    {
+        $sqliteMock = $this->createMock(SQLite3::class);
+        $resultMock = $this->createMock(SQLite3Result::class);
+
+        $sqliteMock->expects($this->once())
+            ->method("query")
+            ->with($this->stringStartsWith("SELECT"))
+            ->willReturn($resultMock);
+        $resultMock->expects($this->exactly(2))
+                   ->method("fetchArray")
+                   ->willReturn(
+                       ["id" => 1, "internalName" => "TeamOne",
+                       "identificators" => "Team, One", "leagueUrl" => "leagueUrl",
+                       "cupUrl" => "cupUrl"],
+                       false
+                   );
+
+        $adapter = new SqliteAdapter($sqliteMock);
+
+        $teams = $adapter->getTeams();
+
+        $this->assertTrue(is_array($teams));
+        $this->assertEquals(1, count($teams));
+        $this->assertInstanceOf(Team::class, $teams[0]);
+        $team = $teams[0];
+        $this->assertEquals(1, $team->id);
+    }
+
+    public function testGetTeamsQueryFail(): void
+    {
+        $sqliteMock = $this->createMock(SQLite3::class);
+
+        $sqliteMock->expects($this->once())
+            ->method("query")
+            ->with($this->stringStartsWith("SELECT"))
+            ->willReturn(false);
+
+        $adapter = new SqliteAdapter($sqliteMock);
+
+        $this->expectException(PersistenceError::class);
+        $adapter->getTeams();
     }
 
     public function testCreateTables()

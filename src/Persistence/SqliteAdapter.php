@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tobb10001\H4aIntegration\Persistence;
 
 use SQLite3;
+use Tobb10001\H4aIntegration\Exceptions\PersistenceError;
 use Tobb10001\H4aIntegration\Models\LeagueData;
+use Tobb10001\H4aIntegration\Models\Team;
 
 /**
  * Interface for a Sqlite-Database. Allows managing teams, querying data
@@ -41,8 +43,24 @@ class SqliteAdapter implements UpdaterInterface
      */
     public function getTeams(): array
     {
-        // TODO
-        return [];
+        $res = $this->db->query(
+            "SELECT * FROM {$this->prefix}teams;"
+        );
+
+        if ($res === false) {
+            throw new PersistenceError("Teams could not be fetched.");
+        }
+
+        $teamArrs = [];
+        $currTeam = null;
+        while ($currTeam = $res->fetchArray(SQLITE3_ASSOC)) {
+            $teamArrs[] = $currTeam;
+        }
+
+        $teamObjs = array_map(function ($item) {
+            return new Team($item);
+        }, $teamArrs);
+        return $teamObjs;
     }
 
     /**
