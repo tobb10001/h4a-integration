@@ -51,4 +51,23 @@ class Team
      * be sent to users to lead them to H4A.
      */
     public ?string $cupUrl;
+
+    /**
+     * @param array<mixed> $input
+     */
+    public function __construct(array $input)
+    {
+        $this->id = $input["id"];
+        $this->internalName = $input["internalName"];
+        $ident = $input["identificators"];
+        if (is_null($ident)) {
+            $this->identificators = [];
+        } elseif (is_array($ident)) {
+            $this->identificators = $ident;
+        } else { /* is_string($identificators) */
+            $this->identificators = explode(",", $ident);
+        }
+        $this->leagueUrl = $input["leagueUrl"];
+        $this->cupUrl = $input["cupUrl"];
+    }
 }

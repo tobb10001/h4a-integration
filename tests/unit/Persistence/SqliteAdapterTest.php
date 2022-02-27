@@ -38,10 +38,10 @@ class SqliteAdapterTest extends TestCase
     public function testCreateTables()
     {
         // arrange
-        $adapter = new SqliteAdapter($this->sqlite);
+        $adapter = new SqliteAdapter($this->sqlite, "pf_");
 
         // act
-        $adapter->createTables("pf_");
+        $adapter->createTables();
 
         // assert
         $this->assertTrue(self::tableExists("pf_teams"));
