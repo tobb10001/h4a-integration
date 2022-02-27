@@ -15,18 +15,18 @@ class Game
     /** @var string $gID H4A's internal game ID. */
     public string $gID;
     /** @var string $sGID ID for the press report, as soon as it's available. */
-    public string $sGID;
+    public ?string $sGID;
     public string $gNo;
     /** @var bool $live Whether the game is currently in progress. */
     public bool $live;
     /** @var string $gToken Token to access the live ticker, if available. */
-    public string $gToken;
+    public ?string $gToken;
     public string $gAppid;
 
     /** @var string $gDate The (start) date the game takes place on. DD.MM.YY */
     public string $gDate;
-    /** @var string $gWeekDay German two letter representation of the day of week */
-    public string $gWeekDay;
+    /** @var string $gWDay German two letter representation of the day of week */
+    public string $gWDay;
     /** @var string $gTime The time of day the game starts. HH:MM */
     public string $gTime;
 
@@ -70,14 +70,14 @@ class Game
     public function __construct(array $input)
     {
         $this->gID = $input["gID"];
-        $this->sGID = $input["sGID"];
+        $this->sGID = is_string($input["sGID"]) ? $input["sGID"] : null;
         $this->gNo = $input["gNo"];
         $this->live = $input["live"];
-        $this->gToken = $input["gToken"];
+        $this->gToken = !empty($input["gToken"]) ? $input["gToken"] : null;
         $this->gAppid = $input["gAppid"];
 
         $this->gDate = $input["gDate"];
-        $this->gWeekDay = $input["gWeekDay"];
+        $this->gWDay = $input["gWDay"];
         $this->gTime = $input["gTime"];
 
         $this->gGymnasiumID = $input["gGymnasiumID"];

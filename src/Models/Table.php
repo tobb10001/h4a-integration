@@ -23,6 +23,22 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
         $this->tabScores = $tabScores;
     }
 
+    /**
+     * Construct a Table from JSON.
+     * @param array<mixed> $jsonAssoc
+     * @return self
+     */
+    public static function fromJson(array $jsonAssoc): self
+    {
+        $scores = array_map(
+            function ($item) {
+                return new TabScore($item);
+            },
+            $jsonAssoc
+        );
+        return new self($scores);
+    }
+
     /* region Interface IteratorAggregate */
     public function getIterator()
     {

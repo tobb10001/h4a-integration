@@ -26,7 +26,7 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     public array $games;
 
     /**
-     * @param array<string, string> $metadata
+     * @param array<mixed> $metadata
      * @param array<Game> $games
      */
     public function __construct(array $metadata, array $games)
@@ -35,9 +35,25 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
         $this->gClassSname = $metadata["gClassSname"];
         $this->gClassLname = $metadata["gClassLname"];
         $this->gRefAllocType = $metadata["gRefAllocType"];
-        $this->gRefRespOrg = $metadata["gRefRepOrg"];
+        $this->gRefRespOrg = $metadata["gRefRespOrg"];
 
         $this->games = $games;
+    }
+
+    /**
+     * Create a GameSchedule-Object from JSON-Data.
+     * @param array<mixed> $jsonAssoc
+     * @return self
+     */
+    public static function fromJson(array $jsonAssoc): self
+    {
+        $games = array_map(
+            function ($item) {
+                return new Game($item);
+            },
+            $jsonAssoc["games"]
+        );
+        return new self($jsonAssoc, $games);
     }
 
     /* region Interface Array Access */

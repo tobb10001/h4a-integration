@@ -22,7 +22,7 @@ class LeagueMetadata
      * report URL.
      */
     public string $repURL;
-    public bool $scoreShownDataPerGame;
+    public bool $scoreShowDataPerGame;
 
     /**
      * @param array<mixed> $input
@@ -35,6 +35,6 @@ class LeagueMetadata
         $this->headline2 = $input["headline2"];
         $this->actualized = $input["actualized"];
         $this->repURL = $input["repURL"];
-        $this->scoreShownDataPerGame = $input["scoreShownDataPerGame"];
+        $this->scoreShowDataPerGame = $input["scoreShowDataPerGame"];
     }
 }

@@ -29,4 +29,19 @@ class LeagueData
         $this->table = $table;
         $this->games = $games;
     }
+
+    /**
+     * Construct an object from JSON: The response of the league endpoint.
+     * @param array<mixed> $jsonAssoc
+     * @return self
+     */
+    public static function fromJson(array $jsonAssoc): self
+    {
+        $jsonAssoc = $jsonAssoc[0];
+
+        $metadata = $jsonAssoc["head"];
+        $table = Table::fromJson($jsonAssoc["content"]["score"]);
+        $games = GameSchedule::fromJson($jsonAssoc["content"]["futureGames"]);
+        return new self($metadata, $table, $games);
+    }
 }
