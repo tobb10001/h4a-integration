@@ -2,8 +2,3 @@ parameters:
     level: 8
     paths:
         - src
-        - tests
-    ignoreErrors:
-        -
-            message: '#Method .* has no return type specified.#'
-            path: tests
