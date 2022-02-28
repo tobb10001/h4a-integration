@@ -65,6 +65,7 @@ class SqliteAdapter implements UpdaterInterface
 
     /**
      * {@inheritDoc}
+     * @codeCoverageIgnore as long as it is not implemented
      */
     public function replaceLeagueData(int $id, LeagueData $leagueData): bool
     {
