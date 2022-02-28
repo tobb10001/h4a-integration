@@ -16,7 +16,7 @@ class Team
      * @var int $id
      * Non-semantic team identifier.
      */
-    public int $id;
+    public ?int $id;
 
     /**
      * @var string $internalName
@@ -57,17 +57,17 @@ class Team
      */
     public function __construct(array $input)
     {
-        $this->id = $input["id"];
+        $this->id = $input["id"] ?? null;
         $this->internalName = $input["internalName"];
-        $ident = $input["identificators"];
+        $ident = $input["identificators"] ?? null;
         if (is_null($ident)) {
             $this->identificators = [];
         } elseif (is_array($ident)) {
             $this->identificators = $ident;
         } else { /* is_string($identificators) */
-            $this->identificators = explode(",", $ident);
+            $this->identificators = !empty($ident) ? explode(",", $ident) : [];
         }
-        $this->leagueUrl = $input["leagueUrl"];
-        $this->cupUrl = $input["cupUrl"];
+        $this->leagueUrl = $input["leagueUrl"] ?? null;
+        $this->cupUrl = $input["cupUrl"] ?? null;
     }
 }

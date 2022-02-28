@@ -39,6 +39,9 @@ class SqliteAdapterTest extends TestCase
         return (bool) $res->numColumns() && $res->columnType(0) != SQLITE3_NULL;
     }
 
+    /**
+     * @uses Tobb10001\H4aIntegration\Models\Team
+     */
     public function testGetTeams(): void
     {
         $sqliteMock = $this->createMock(SQLite3::class);
