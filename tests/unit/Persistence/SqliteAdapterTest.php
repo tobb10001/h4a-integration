@@ -17,16 +17,9 @@ use Tobb10001\H4aIntegration\Models\Team;
  */
 class SqliteAdapterTest extends TestCase
 {
-    private SQLite3 $sqlite;
-
-    public function setUp(): void
+    private function tableExists(SQLite3 $sqlite, string $tableName): bool
     {
-        $this->sqlite = new SQLite3(":memory:");
-    }
-
-    private function tableExists(string $tableName): bool
-    {
-        $res = $this->sqlite->query(
+        $res = $sqlite->query(
             // check if table exists
             // https://stackoverflow.com/a/1604121
             "SELECT name FROM sqlite_master WHERE type='table' AND name='${tableName}';"
@@ -89,16 +82,17 @@ class SqliteAdapterTest extends TestCase
     public function testCreateTables()
     {
         // arrange
-        $adapter = new SqliteAdapter($this->sqlite, "pf_");
+        $sqlite = new SQLite3(":memory:");
+        $adapter = new SqliteAdapter($sqlite, "pf_");
 
         // act
         $adapter->createTables();
 
         // assert
-        $this->assertTrue(self::tableExists("pf_teams"));
-        $this->assertTrue(self::tableExists("pf_leaguemetadata"));
-        $this->assertTrue(self::tableExists("pf_games"));
-        $this->assertTrue(self::tableExists("pf_tabscores"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_teams"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_leaguemetadata"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_games"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_tabscores"));
     }
 
     public function testCreateTableRollback(): void
