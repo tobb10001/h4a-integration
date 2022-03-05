@@ -13,7 +13,7 @@ use Tobb10001\H4aIntegration\Models\Team;
  * Interface for a Sqlite-Database. Allows managing teams, querying data
  * and updating it.
  */
-class SqliteAdapter implements UpdaterInterface
+class SqliteAdapter implements PersistenceInterface
 {
     public const IF_NOT_EXISTS = 0x1;
 

@@ -7,7 +7,7 @@ namespace Tobb10001\H4aIntegration\Persistence;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 
-interface UpdaterInterface
+interface PersistenceInterface
 {
     /**
      * Read what teams are registered at the moment.
