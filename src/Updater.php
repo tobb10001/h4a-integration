@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration;
 
-use Tobb10001\H4aIntegration\Exceptions\ErrorException;
+use Tobb10001\H4aIntegration\Exceptions\ProgrammingError;
 use Tobb10001\H4aIntegration\Exceptions\UnsuccessfulRequestException;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
@@ -33,7 +33,7 @@ class Updater
     private function leagueDataFor(Team $team): LeagueData
     {
         if (is_null($team->leagueUrl)) {
-            throw new ErrorException(
+            throw new ProgrammingError(
                 __METHOD__ . " was called with a team without leagueUrl: {$team->id}: {$team->internalName}."
             );
         }
@@ -44,7 +44,7 @@ class Updater
     private function updateTeam(Team $team): void
     {
         if (is_null($team->id)) {
-            throw new ErrorException(
+            throw new ProgrammingError(
                 __METHOD__ . " was called with a team without ID: {$team->internalName}"
             );
         }
