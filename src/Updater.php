@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration;
 
-use PhpParser\Node\Stmt\TryCatch;
+use Tobb10001\H4aIntegration\Exceptions\ErrorException;
 use Tobb10001\H4aIntegration\Exceptions\UnsuccessfulRequestException;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
@@ -32,23 +32,25 @@ class Updater
 
     private function leagueDataFor(Team $team): LeagueData
     {
-        /**
-         * $team->leagueUrl is checked to be non-null before call.
-         * @phpstan-ignore-next-line
-         */
+        if (is_null($team->leagueUrl)) {
+            throw new ErrorException(
+                __METHOD__ . " was called with a team without leagueUrl: {$team->id}: {$team->internalName}."
+            );
+        }
         $json = $this->hc->getJson($team->leagueUrl);
         return LeagueData::fromJson($json);
     }
 
     private function updateTeam(Team $team): void
     {
+        if (is_null($team->id)) {
+            throw new ErrorException(
+                __METHOD__ . " was called with a team without ID: {$team->internalName}"
+            );
+        }
         if (!is_null($team->leagueUrl)) {
             try {
                 $leagueData = $this->leagueDataFor($team);
-                /**
-                 * $team->leagueUrl is checked to be non-null before call.
-                 * @phpstan-ignore-next-line
-                 */
                 $this->pi->replaceLeagueData($team->id, $leagueData);
             } catch (UnsuccessfulRequestException) {
                 trigger_error(
