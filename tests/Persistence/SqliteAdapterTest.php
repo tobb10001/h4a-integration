@@ -72,6 +72,12 @@ class SqliteAdapterTest extends TestCase
             ->method("query")
             ->with($this->stringStartsWith("SELECT"))
             ->willReturn(false);
+        $sqliteMock->expects($this->once())
+                   ->method("lastErrorCode")
+                   ->willReturn(0);
+        $sqliteMock->expects($this->once())
+                   ->method("lastErrorMsg")
+               ->willReturn("Some Error.");
 
         $adapter = new SqliteAdapter($sqliteMock);
 
@@ -110,5 +116,44 @@ class SqliteAdapterTest extends TestCase
 
         $adapter = new SqliteAdapter($mock);
         $this->assertFalse($adapter->createTables());
+    }
+
+    public function testInsertTeam(): void
+    {
+        // arrange
+        $db = new SQLite3(":memory:");
+
+        $team = new Team([
+            "internalName" => "TeamOne",
+            "identificators" => "TeamOne",
+            "leagueUrl" => "leagueUrl",
+            "cupUrl" => "cupUrl",
+        ]);
+
+        $adapter = new SqliteAdapter($db);
+        $adapter->createTables();
+
+        // act
+        $result = $adapter->insertTeam($team);
+
+        // assert
+        $this->assertTrue($result);
+
+        $teams = $adapter->getTeams();
+
+        $this->assertEquals(1, count($teams));
+        $team = $teams[0];
+        $this->assertIsInt($team->id);
+        $this->assertEquals([
+            "internalName" => "TeamOne",
+            "identificators" => ["TeamOne"],
+            "leagueUrl" => "leagueUrl",
+            "cupUrl" => "cupUrl",
+        ], [
+            "internalName" => $team->internalName,
+            "identificators" => $team->identificators,
+            "leagueUrl" => $team->leagueUrl,
+            "cupUrl" => $team->cupUrl,
+        ]);
     }
 }

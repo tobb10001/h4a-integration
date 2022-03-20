@@ -48,7 +48,10 @@ class SqliteAdapter implements PersistenceInterface
         );
 
         if ($res === false) {
-            throw new PersistenceError("Teams could not be fetched.");
+            throw new PersistenceError(
+                "Teams could not be fetched: "
+                    . "{$this->db->lastErrorCode()} {$this->db->lastErrorMsg()}"
+            );
         }
 
         $teamArrs = [];
@@ -61,6 +64,43 @@ class SqliteAdapter implements PersistenceInterface
             return new Team($item);
         }, $teamArrs);
         return $teamObjs;
+    }
+
+    /**
+     * Insert a team into the database.
+     * @param Team $team The team to insert.
+     * @return bool True, if the insertion was succsessful, false otherwise.
+     */
+    public function insertTeam(Team $team): bool
+    {
+        $sql = <<<SQL
+            INSERT INTO {$this->prefix}teams (
+                internalName,
+                identificators,
+                leagueUrl,
+                cupUrl
+            ) VALUES (
+                :internalName,
+                :identificators,
+                :leagueUrl,
+                :cupUrl
+            );
+SQL;
+        $stmt = $this->db->prepare($sql);
+
+        if (!$stmt) {
+            throw new PersistenceError(
+                "Could not prepare statement: "
+                . "{$this->db->lastErrorCode()} {$this->db->lastErrorMsg()}"
+            );
+        }
+
+        $stmt->bindValue("internalName", $team->internalName);
+        $stmt->bindValue("identificators", $team->identificatorStr());
+        $stmt->bindValue("leagueUrl", $team->leagueUrl);
+        $stmt->bindValue("cupUrl", $team->cupUrl);
+
+        return (bool) $stmt->execute();
     }
 
     /**

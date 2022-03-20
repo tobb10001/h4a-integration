@@ -70,4 +70,13 @@ class Team
         $this->leagueUrl = $input["leagueUrl"] ?? null;
         $this->cupUrl = $input["cupUrl"] ?? null;
     }
+
+    /**
+     * Convert the identificators to a string that can be stored in a database.
+     * @return string
+     */
+    public function identificatorStr(): string
+    {
+        return implode(",", $this->identificators);
+    }
 }
