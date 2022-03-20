@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration\Models;
 
+use Traversable;
+
 /**
  * Represents a table.
  * Oriented at the ["scores"]-Json.
@@ -43,7 +45,7 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         yield from $this->tabScores;
     }
@@ -53,7 +55,7 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (is_null($offset)) {
             $this->tabScores[] = $value;
@@ -65,7 +67,7 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->tabScores[$offset]);
     }
@@ -73,7 +75,7 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->tabScores[$offset]);
     }
@@ -91,7 +93,7 @@ class Table implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function count()
+    public function count(): int
     {
         return count($this->tabScores);
     }

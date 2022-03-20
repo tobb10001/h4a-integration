@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration\Models;
 
+use Traversable;
+
 /**
  * Represents a set of games, along with it's metadata.
  * Oriented at the ["futureGames"]-Json.
@@ -60,7 +62,7 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if (is_null($offset)) {
             $this->games[] = $value;
@@ -72,7 +74,7 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->games[$offset]);
     }
@@ -80,7 +82,7 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->games[$offset]);
     }
@@ -98,7 +100,7 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function count()
+    public function count(): int
     {
         return count($this->games);
     }
@@ -108,7 +110,7 @@ class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
     /**
      * @codeCoverageIgnore
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         yield from $this->games;
     }
