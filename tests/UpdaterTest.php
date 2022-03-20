@@ -41,7 +41,7 @@ class UpdaterTest extends TestCase
                  ->with("someUrl")
                  ->willReturn(
                      json_decode(
-                         file_get_contents(__DIR__ . "/../assets/league_response.json"),
+                         file_get_contents(__DIR__ . "/assets/league_response.json"),
                          true
                      )
                  );
