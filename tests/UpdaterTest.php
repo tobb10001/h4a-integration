@@ -10,7 +10,15 @@ use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
 use Tobb10001\H4aIntegration\Util\HttpClient;
 
 /**
- * @covers Updater;
+ * @covers Tobb10001\H4aIntegration\Updater
+ * @uses Tobb10001\H4aIntegration\Util\Json
+ * @uses Tobb10001\H4aIntegration\Models\Game
+ * @uses Tobb10001\H4aIntegration\Models\GameSchedule
+ * @uses Tobb10001\H4aIntegration\Models\LeagueData
+ * @uses Tobb10001\H4aIntegration\Models\LeagueMetadata
+ * @uses Tobb10001\H4aIntegration\Models\Table
+ * @uses Tobb10001\H4aIntegration\Models\TabScore
+ * @uses Tobb10001\H4aIntegration\Models\Team
  */
 class UpdaterTest extends TestCase
 {
