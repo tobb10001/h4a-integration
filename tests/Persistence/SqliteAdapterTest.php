@@ -85,39 +85,6 @@ class SqliteAdapterTest extends TestCase
         $adapter->getTeams();
     }
 
-    public function testCreateTables()
-    {
-        // arrange
-        $sqlite = new SQLite3(":memory:");
-        $adapter = new SqliteAdapter($sqlite, "pf_");
-
-        // act
-        $adapter->createTables();
-
-        // assert
-        $this->assertTrue(self::tableExists($sqlite, "pf_teams"));
-        $this->assertTrue(self::tableExists($sqlite, "pf_leaguemetadata"));
-        $this->assertTrue(self::tableExists($sqlite, "pf_games"));
-        $this->assertTrue(self::tableExists($sqlite, "pf_tabscores"));
-    }
-
-    public function testCreateTableRollback(): void
-    {
-        $mock = $this->createMock(SQLite3::class);
-
-        $mock->expects($this->exactly(3))
-             ->method("exec")
-             ->withConsecutive(
-                 ["BEGIN;"],
-                 [$this->stringContains("CREATE TABLE")],
-                 ["ROLLBACK;"]
-             )
-             ->willReturn(true, false, true);
-
-        $adapter = new SqliteAdapter($mock);
-        $this->assertFalse($adapter->createTables());
-    }
-
     public function testInsertTeam(): void
     {
         // arrange
@@ -155,5 +122,38 @@ class SqliteAdapterTest extends TestCase
             "leagueUrl" => $team->leagueUrl,
             "cupUrl" => $team->cupUrl,
         ]);
+    }
+
+    public function testCreateTables()
+    {
+        // arrange
+        $sqlite = new SQLite3(":memory:");
+        $adapter = new SqliteAdapter($sqlite, "pf_");
+
+        // act
+        $adapter->createTables();
+
+        // assert
+        $this->assertTrue(self::tableExists($sqlite, "pf_teams"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_leaguemetadata"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_games"));
+        $this->assertTrue(self::tableExists($sqlite, "pf_tabscores"));
+    }
+
+    public function testCreateTableRollback(): void
+    {
+        $mock = $this->createMock(SQLite3::class);
+
+        $mock->expects($this->exactly(3))
+             ->method("exec")
+             ->withConsecutive(
+                 ["BEGIN;"],
+                 [$this->stringContains("CREATE TABLE")],
+                 ["ROLLBACK;"]
+             )
+             ->willReturn(true, false, true);
+
+        $adapter = new SqliteAdapter($mock);
+        $this->assertFalse($adapter->createTables());
     }
 }
