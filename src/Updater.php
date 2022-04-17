@@ -30,6 +30,10 @@ class Updater
         $this->hc = $hc ?? new HttpClient();
     }
 
+    /**
+     * Use the associated HttpClient to download the league data for the
+     * desired team and convert it to a LeagueData object.
+     */
     private function leagueDataFor(Team $team): LeagueData
     {
         if (is_null($team->leagueUrl)) {
@@ -41,6 +45,9 @@ class Updater
         return LeagueData::fromJson($json);
     }
 
+    /**
+     * Update a single team in the database.
+     */
     private function updateTeam(Team $team): void
     {
         if (is_null($team->id)) {
@@ -61,6 +68,10 @@ class Updater
         }
     }
 
+    /**
+     * Update all teams in the databse.
+     * This function is supposed to be run by a cronjob.
+     */
     public function update(): void
     {
         $teams = $this->pi->getTeams();
