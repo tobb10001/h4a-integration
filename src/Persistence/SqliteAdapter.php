@@ -70,6 +70,278 @@ class SqliteAdapter implements PersistenceInterface
         return $teamObjs;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    public function replaceLeagueData(int $teamid, LeagueData $leagueData): bool
+    {
+        $exceptionState = $this->db->enableExceptions(true);
+
+        try {
+            $this->db->exec("BEGIN;");
+
+            // delete old data
+            $stmt = $this->db->prepare(
+                "DELETE FROM {$this->prefix}leaguemetadata WHERE teamid = :teamid"
+            );
+            if ($stmt === false) {
+                throw new PersistenceError(
+                    "Could not prepare statement to delete old league data:"
+                    . " {$this->db->lastErrorCode()} {$this->db->lastErrorMsg()}"
+                );
+            }
+            $stmt->bindValue("teamid", $teamid);
+            $stmt->execute();
+
+            // insert metadata
+            $metadataId = $this->insertMetadata($teamid, $leagueData->metadata);
+
+            // insert games
+            foreach ($leagueData->games as $game) {
+                $this->insertGame($metadataId, $game);
+            }
+
+            // insert games
+            foreach ($leagueData->table as $tabScore) {
+                $this->insertTabScore($metadataId, $tabScore);
+            }
+
+            $this->db->exec("COMMIT;");
+        } catch (Exception $e) {
+            $this->db->exec("ROLLBACK;");
+            throw new PersistenceError(
+                "Could not replace league data for {$teamid}: {$e->getMessage()}",
+                0,
+                $e
+            );
+        }
+
+        $this->db->enableExceptions($exceptionState);
+
+        return true;
+    }
+
+    /** endregion */
+
+    private function insertMetadata(int $teamid, LeagueMetadata $leagueMetaData): int
+    {
+        $stmt = $this->db->prepare(
+            <<< SQL
+                INSERT INTO {$this->prefix}leaguemetadata (
+                    teamid,
+                    name,
+                    sname,
+                    headline1,
+                    headline2,
+                    actualized,
+                    repURl,
+                    scoreShownPerGame,
+                ) VALUES (
+                    :teamid,
+                    :name,
+                    :sname,
+                    :headline1,
+                    :headline2,
+                    :actualized,
+                    :repUrl,
+                    :scoreShownPerGame,
+                );
+            SQL
+        );
+
+        if ($stmt === false) {
+            throw new PersistenceError(
+                "Could not prepare insert metadata query:"
+                    . " {$this->db->lastErrorCode()} {$this->db->lastErrorMsg()}"
+            );
+        }
+
+        $stmt->bindValue("teamid", $teamid);
+        $stmt->bindValue("name", $leagueMetaData->name);
+        $stmt->bindValue("sname", $leagueMetaData->sname);
+        $stmt->bindValue("headline1", $leagueMetaData->headline1);
+        $stmt->bindValue("headline2", $leagueMetaData->headline2);
+        $stmt->bindValue("actualized", $leagueMetaData->actualized);
+        $stmt->bindValue("repUrl", $leagueMetaData->repURL);
+        $stmt->bindValue("scoreShownPerGame", $leagueMetaData->scoreShowDataPerGame);
+        $stmt->execute();
+
+        return $this->db->lastInsertRowID();
+    }
+
+    private function insertGame(int $metadataId, Game $game): void
+    {
+        $stmt = $this->db->prepare(<<< SQL
+            INSERT INTO {$this->prefix}games (
+                metadataid,
+                gID,
+                sGID,
+                gNo,
+                live,
+                gToken,
+                gAppid,
+                gDate,
+                gWDay,
+                gTime,
+                gGymnasiumID,
+                gGymnasiumNo,
+                gGymnasiumName,
+                gGymnasiumPostal,
+                gGymnasiumTown,
+                gGymnasiumStreet,
+                gHomeTeam,
+                gGuestTeam,
+                gHomeGoals,
+                gGuestGoals,
+                gHomeGoals_1,
+                gGuestGoals_1,
+                gHomePoints,
+                gGuestPoints,
+                gComment,
+                gGroupsortTxt,
+                gReferee,
+                robotextstate,
+            ) VALUES (
+                :metadataid,
+                :gID,
+                :sGID,
+                :gNo,
+                :live,
+                :gToken,
+                :gAppid,
+                :gDate,
+                :gWDay,
+                :gTime,
+                :gGymnasiumID,
+                :gGymnasiumNo,
+                :gGymnasiumName,
+                :gGymnasiumPostal,
+                :gGymnasiumTown,
+                :gGymnasiumStreet,
+                :gHomeTeam,
+                :gGuestTeam,
+                :gHomeGoals,
+                :gGuestGoals,
+                :gHomeGoals_1,
+                :gGuestGoals_1,
+                :gHomePoints,
+                :gGuestPoints,
+                :gComment,
+                :gGroupsortTxt,
+                :gReferee,
+                :robotextstate,
+            );
+        SQL);
+
+        if ($stmt === false) {
+            throw new PersistenceError(
+                "Could not prepare insert game query:"
+                . " {$this->db->lastErrorCode()} {$this->db->lastErrorMsg()}"
+            );
+        }
+        $stmt->bindValue("metadataid", $metadataId);
+        $stmt->bindValue("gID", $game->gID);
+        $stmt->bindValue("sGID", $game->sGID);
+        $stmt->bindValue("gNo", $game->gNo);
+        $stmt->bindValue("live", $game->live);
+        $stmt->bindValue("gToken", $game->gToken);
+        $stmt->bindValue("gAppid", $game->gAppid);
+        $stmt->bindValue("gDate", $game->gDate);
+        $stmt->bindValue("gWDay", $game->gWDay);
+        $stmt->bindValue("gTime", $game->gTime);
+        $stmt->bindValue("gGymnasiumID", $game->gGymnasiumID);
+        $stmt->bindValue("gGymnasiumNo", $game->gGymnasiumNo);
+        $stmt->bindValue("gGymnasiumName", $game->gGymnasiumName);
+        $stmt->bindValue("gGymnasiumPoastal", $game->gGymnasiumPostal);
+        $stmt->bindValue("gGymnasiumTown", $game->gGymnasiumTown);
+        $stmt->bindValue("gGymnasiumStreet", $game->gGymnasiumStreet);
+        $stmt->bindValue("gHomeTeam", $game->gHomeTeam);
+        $stmt->bindValue("gGuestTeam", $game->gGuestTeam);
+        $stmt->bindValue("gHomeGoals", $game->gHomeGoals);
+        $stmt->bindValue("gGuestGoals", $game->gGuestGoals);
+        $stmt->bindValue("gHomeGoals_1", $game->gHomeGoals_1);
+        $stmt->bindValue("gGuestGoals_1", $game->gGuestGoals_1);
+        $stmt->bindValue("gHomePoints", $game->gHomePoints);
+        $stmt->bindValue("gGuestPoints", $game->gGuestPoints);
+        $stmt->bindValue("gComment", $game->gComment);
+        $stmt->bindValue("gGroupsortTxt", $game->gGroupsortTxt);
+        $stmt->bindValue("gReferee", $game->gReferee);
+        $stmt->bindValue("robotextstate", $game->robotextstate);
+
+        $stmt->execute();
+    }
+
+    private function insertTabScore(int $metadataId, TabScore $tabScore): void
+    {
+        $stmt = $this->db->prepare(<<< SQL
+            INSERT INTO {$this->prefix}tabscores (
+                metadataid,
+                tabScore,
+                tabTeamID,
+                tabTeamname,
+                liveTeam,
+                numPlayedGames,
+                numWonGames,
+                numEqualGames,
+                numLostGames,
+                numGoalsShot,
+                numGoalsGot,
+                pointsPlus,
+                pointsMinus,
+                pointsPerGame10,
+                numGoalsDiffperGame,
+                numGoalsShotperGame,
+                posCriterion,
+            ) VALUES (
+                :metadataid,
+                :tabScore,
+                :tabTeamID,
+                :tabTeamname,
+                :liveTeam,
+                :numPlayedGames,
+                :numWonGames,
+                :numEqualGames,
+                :numLostGames,
+                :numGoalsShot,
+                :numGoalsGot,
+                :pointsPlus,
+                :pointsMinus,
+                :pointsPerGame10,
+                :numGoalsDiffperGame,
+                :numGoalsShotperGame,
+                :posCriterion,
+            );
+        SQL);
+
+        if ($stmt === false) {
+            throw new PersistenceError(
+                "Could not prepare insert tabscore query:"
+                . " {$this->db->lastErrorCode()} {$this->db->lastErrorMsg()}"
+            );
+        }
+
+        $stmt->bindValue("metadataid", $metadataId);
+        $stmt->bindValue("tabScore", $tabScore->tabScore);
+        $stmt->bindValue("tabTeamID", $tabScore->tabTeamID);
+        $stmt->bindValue("tabTeamname", $tabScore->tabTeamname);
+        $stmt->bindValue("liveTeam", $tabScore->liveTeam);
+        $stmt->bindValue("numPlayedGames", $tabScore->numPlayedGames);
+        $stmt->bindValue("numWonGames", $tabScore->numWonGames);
+        $stmt->bindValue("numEqualGames", $tabScore->numEqualGames);
+        $stmt->bindValue("numLostGames", $tabScore->numLostGames);
+        $stmt->bindValue("numGoalsShot", $tabScore->numGoalsShot);
+        $stmt->bindValue("numGoalsGot", $tabScore->numGoalsGot);
+        $stmt->bindValue("pointsPlus", $tabScore->pointsPlus);
+        $stmt->bindValue("pointsMinus", $tabScore->pointsMinus);
+        $stmt->bindValue("pointsPerGame10", $tabScore->pointsPerGame10);
+        $stmt->bindValue("numGoalsDiffperGame", $tabScore->numGoalsDiffperGame);
+        $stmt->bindValue("numGoalsShotperGame", $tabScore->numGoalsShotperGame);
+        $stmt->bindValue("posCriterion", $tabScore->posCriterion);
+
+        $stmt->execute();
+    }
+
     /**
      * Insert a team into the database.
      * @param Team $team The team to insert.
@@ -106,18 +378,6 @@ SQL;
 
         return (bool) $stmt->execute();
     }
-
-    /**
-     * {@inheritDoc}
-     * @codeCoverageIgnore as long as it is not implemented
-     */
-    public function replaceLeagueData(int $id, LeagueData $leagueData): bool
-    {
-        // TODO
-        return true;
-    }
-
-    /** endregion */
 
     /** region Table Creation */
     /**
@@ -199,7 +459,7 @@ SQL;
 				gToken VARCHAR NULL DEFAULT NULL,
 				gAppid VARCHAR NOT NULL,
 				gDate VARCHAR NOT NULL,
-				gWeekDay VARCHAR NOT NULL,
+				gWDay VARCHAR NOT NULL,
 				gTime VARCHAR NOT NULL,
 				gGymnasiumID VARCHAR NOT NULL,
 				gGymnasiumNo VARCHAR NOT NULL,
@@ -218,7 +478,7 @@ SQL;
 				gComment VARCHAR NOT NULL,
 				gGroupsortTxt VARCHAR NOT NULL,
 				gReferee VARCHAR NOT NULL,
-				grobotextstate VARCHAR NOT NULL,
+				robotextstate VARCHAR NOT NULL,
 				CONSTRAINT fk_metadata
 					FOREIGN KEY (metadataid) REFERENCES {$this->prefix}metadata(id)
 					ON UPDATE CASCADE ON DELETE CASCADE
