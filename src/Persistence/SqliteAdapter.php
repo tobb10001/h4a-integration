@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration\Persistence;
 
+use Exception;
 use SQLite3;
 use Tobb10001\H4aIntegration\Exceptions\PersistenceError;
+use Tobb10001\H4aIntegration\Models\Game;
 use Tobb10001\H4aIntegration\Models\LeagueData;
+use Tobb10001\H4aIntegration\Models\LeagueMetadata;
+use Tobb10001\H4aIntegration\Models\TabScore;
 use Tobb10001\H4aIntegration\Models\Team;
 
 /**
@@ -200,7 +204,7 @@ SQL;
 				gGymnasiumID VARCHAR NOT NULL,
 				gGymnasiumNo VARCHAR NOT NULL,
 				gGymnasiumName VARCHAR NOT NULL,
-				gGymnasiumPoastal VARCHAR NOT NULL,
+				gGymnasiumPostal VARCHAR NOT NULL,
 				gGymnasiumTown VARCHAR NOT NULL,
 				gGymnasiumStreet VARCHAR NOT NULL,
 				gHomeTeam VARCHAR NOT NULL,
@@ -241,6 +245,7 @@ SQL;
         return <<<SQL
 			CREATE TABLE ${_ifNotExists} {$this->prefix}tabscores (
 				metadataid INTEGER NOT NULL,
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
 				tabScore INT NOT NULL,
 				tabTeamID VARCHAR NOT NULL,
 				tabTeamname VARCHAR NOT NULL,

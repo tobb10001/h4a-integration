@@ -8,8 +8,9 @@ use PHPUnit\Framework\TestCase;
 
 use SQLite3;
 use SQLite3Result;
-
+use SQLite3Stmt;
 use Tobb10001\H4aIntegration\Exceptions\PersistenceError;
+use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 
 /**

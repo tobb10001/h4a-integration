@@ -17,9 +17,9 @@ interface PersistenceInterface
 
     /**
      * Replace a teams league data.
-     * @param int $id The ID of the desired team.
+     * @param int $teamid The ID of the desired team.
      * @param LeagueData $leagueData The new league data.
      * @return bool True, if the replacement was successful, False otherwise.
      */
-    public function replaceLeagueData(int $id, LeagueData $leagueData): bool;
+    public function replaceLeagueData(int $teamid, LeagueData $leagueData): bool;
 }
