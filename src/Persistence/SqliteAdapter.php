@@ -111,7 +111,7 @@ class SqliteAdapter implements PersistenceInterface
         } catch (Exception $e) {
             $this->db->exec("ROLLBACK;");
             throw new PersistenceError(
-                "Could not replace league data for {$teamid}: {$e->getMessage()}",
+                "Could not replace league data for Team {$teamid}: {$e->getMessage()}",
                 0,
                 $e
             );
@@ -127,7 +127,7 @@ class SqliteAdapter implements PersistenceInterface
     private function insertMetadata(int $teamid, LeagueMetadata $leagueMetaData): int
     {
         $stmt = $this->db->prepare(
-            <<< SQL
+            <<<SQL
                 INSERT INTO {$this->prefix}leaguemetadata (
                     teamid,
                     name,
@@ -135,8 +135,8 @@ class SqliteAdapter implements PersistenceInterface
                     headline1,
                     headline2,
                     actualized,
-                    repURl,
-                    scoreShownPerGame,
+                    repUrl,
+                    scoreShownPerGame
                 ) VALUES (
                     :teamid,
                     :name,
@@ -145,7 +145,7 @@ class SqliteAdapter implements PersistenceInterface
                     :headline2,
                     :actualized,
                     :repUrl,
-                    :scoreShownPerGame,
+                    :scoreShownPerGame
                 );
             SQL
         );
@@ -201,7 +201,7 @@ class SqliteAdapter implements PersistenceInterface
                 gComment,
                 gGroupsortTxt,
                 gReferee,
-                robotextstate,
+                robotextstate
             ) VALUES (
                 :metadataid,
                 :gID,
@@ -230,7 +230,7 @@ class SqliteAdapter implements PersistenceInterface
                 :gComment,
                 :gGroupsortTxt,
                 :gReferee,
-                :robotextstate,
+                :robotextstate
             );
         SQL);
 
@@ -253,7 +253,7 @@ class SqliteAdapter implements PersistenceInterface
         $stmt->bindValue("gGymnasiumID", $game->gGymnasiumID);
         $stmt->bindValue("gGymnasiumNo", $game->gGymnasiumNo);
         $stmt->bindValue("gGymnasiumName", $game->gGymnasiumName);
-        $stmt->bindValue("gGymnasiumPoastal", $game->gGymnasiumPostal);
+        $stmt->bindValue("gGymnasiumPostal", $game->gGymnasiumPostal);
         $stmt->bindValue("gGymnasiumTown", $game->gGymnasiumTown);
         $stmt->bindValue("gGymnasiumStreet", $game->gGymnasiumStreet);
         $stmt->bindValue("gHomeTeam", $game->gHomeTeam);
@@ -292,7 +292,7 @@ class SqliteAdapter implements PersistenceInterface
                 pointsPerGame10,
                 numGoalsDiffperGame,
                 numGoalsShotperGame,
-                posCriterion,
+                posCriterion
             ) VALUES (
                 :metadataid,
                 :tabScore,
@@ -310,7 +310,7 @@ class SqliteAdapter implements PersistenceInterface
                 :pointsPerGame10,
                 :numGoalsDiffperGame,
                 :numGoalsShotperGame,
-                :posCriterion,
+                :posCriterion
             );
         SQL);
 
@@ -423,7 +423,7 @@ SQL;
 				headline1 VARCHAR NOT NULL,
 				headline2 VARCHAR NOT NULL,
 				actualized VARCHAR NOT NULL,
-				repURl VARCHAR NOT NULL,
+				repUrl VARCHAR NOT NULL,
 				scoreShownPerGame NOT NULL,
 				CONSTRAINT fk_team
 					FOREIGN KEY (teamid) REFERENCES {$this->prefix}team(id)
