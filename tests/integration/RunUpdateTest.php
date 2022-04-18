@@ -12,7 +12,7 @@ use SQLite3;
 use Tobb10001\H4aIntegration\Util\HttpClient;
 
 /**
- * @covers Tobb10001\H4aIntegration\Updater::replaceLeagueData
+ * @covers Tobb10001\H4aIntegration\Persistence\SqliteAdapter::replaceLeagueData
  */
 class RunUpdateTest extends TestCase
 {

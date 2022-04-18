@@ -33,10 +33,13 @@ class Updater
     /**
      * Update all teams in the databse.
      * This function is supposed to be run by a cronjob.
+     * @return array<int, array<string, bool>> A mapping of Team-IDs to success-states.
      */
-    public function update(): void
+    public function update(): array
     {
         $teams = $this->pi->getTeams();
+
+        $result = [];
 
         foreach ($teams as $team) {
             if (is_null($team->id)) {
@@ -47,8 +50,10 @@ class Updater
                 );
                 continue;
             }
-            $this->updateTeam($team);
+            $result[$team->id] = $this->updateTeam($team);
         }
+
+        return $result;
     }
 
     /**
@@ -68,24 +73,33 @@ class Updater
 
     /**
      * Update a single team in the database.
+     * @return array<string, bool> A mapping of league / cup to success status.
      */
-    private function updateTeam(Team $team): void
+    private function updateTeam(Team $team): array
     {
         if (is_null($team->id)) {
             throw new ProgrammingError(
                 __METHOD__ . " was called with a team without ID: {$team->internalName}"
             );
         }
+
+        $result = [];
+
         if (!is_null($team->leagueUrl)) {
             try {
                 $leagueData = $this->leagueDataFor($team);
                 $this->pi->replaceLeagueData($team->id, $leagueData);
-            } catch (HttpException) {
+                $result['league'] = true;
+            } catch (HttpException $e) {
                 trigger_error(
                     "Leauge for Team {$team->id} ({$team->internalName}) could"
                     . " not be updated, due to a failed request. Ignoring."
+                    . " Error Message: {$e->getMessage()}"
                 );
+                $result['league'] = false;
             }
         }
+
+        return $result;
     }
 }
