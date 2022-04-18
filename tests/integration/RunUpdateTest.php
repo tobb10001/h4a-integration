@@ -13,6 +13,16 @@ use Tobb10001\H4aIntegration\Util\HttpClient;
 
 /**
  * @covers Tobb10001\H4aIntegration\Persistence\SqliteAdapter::replaceLeagueData
+ * @uses Tobb10001\H4aIntegration\Models\Game
+ * @uses Tobb10001\H4aIntegration\Models\GameSchedule
+ * @uses Tobb10001\H4aIntegration\Models\LeagueData
+ * @uses Tobb10001\H4aIntegration\Models\LeagueMetadata
+ * @uses Tobb10001\H4aIntegration\Models\TabScore
+ * @uses Tobb10001\H4aIntegration\Models\Table
+ * @uses Tobb10001\H4aIntegration\Models\Team
+ * @uses Tobb10001\H4aIntegration\Persistence\SqliteAdapter
+ * @uses Tobb10001\H4aIntegration\Updater
+ * @uses Tobb10001\H4aIntegration\Util\Json
  */
 class RunUpdateTest extends TestCase
 {
