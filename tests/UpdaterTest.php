@@ -3,7 +3,7 @@
 namespace Tobb10001\H4aIntegration;
 
 use PHPUnit\Framework\TestCase;
-use Tobb10001\H4aIntegration\Exceptions\UnsuccessfulRequestException;
+use Tobb10001\H4aIntegration\Exceptions\HttpException;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
@@ -80,7 +80,7 @@ class UpdaterTest extends TestCase
         $mockHttp->expects($this->once())
                  ->method("getJson")
                  ->with("someUrl")
-                 ->will($this->throwException(new UnsuccessfulRequestException("")));
+                 ->will($this->throwException(new HttpException("")));
 
         $updater = new Updater($mockPersistence, $mockHttp);
 

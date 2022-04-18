@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration;
 
+use Tobb10001\H4aIntegration\Exceptions\HttpException;
 use Tobb10001\H4aIntegration\Exceptions\ProgrammingError;
-use Tobb10001\H4aIntegration\Exceptions\UnsuccessfulRequestException;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
@@ -28,6 +28,27 @@ class Updater
     {
         $this->pi = $pi;
         $this->hc = $hc ?? new HttpClient();
+    }
+
+    /**
+     * Update all teams in the databse.
+     * This function is supposed to be run by a cronjob.
+     */
+    public function update(): void
+    {
+        $teams = $this->pi->getTeams();
+
+        foreach ($teams as $team) {
+            if (is_null($team->id)) {
+                trigger_error(
+                    self::class . "->update() got a team without an ID:"
+                        . $team->internalName . "Ignoring the team and continuing.",
+                    E_USER_WARNING
+                );
+                continue;
+            }
+            $this->updateTeam($team);
+        }
     }
 
     /**
@@ -59,33 +80,12 @@ class Updater
             try {
                 $leagueData = $this->leagueDataFor($team);
                 $this->pi->replaceLeagueData($team->id, $leagueData);
-            } catch (UnsuccessfulRequestException) {
+            } catch (HttpException) {
                 trigger_error(
                     "Leauge for Team {$team->id} ({$team->internalName}) could"
                     . " not be updated, due to a failed request. Ignoring."
                 );
             }
-        }
-    }
-
-    /**
-     * Update all teams in the databse.
-     * This function is supposed to be run by a cronjob.
-     */
-    public function update(): void
-    {
-        $teams = $this->pi->getTeams();
-
-        foreach ($teams as $team) {
-            if (is_null($team->id)) {
-                trigger_error(
-                    self::class . "->update() got a team without an ID:"
-                        . $team->internalName . "Ignoring the team and continuing.",
-                    E_USER_WARNING
-                );
-                continue;
-            }
-            $this->updateTeam($team);
         }
     }
 }
