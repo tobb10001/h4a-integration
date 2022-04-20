@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tobb10001\H4aIntegration\Models;
 
+use ArrayAccess;
+use Countable;
+use IteratorAggregate;
 use Traversable;
 
 /**
@@ -12,7 +15,7 @@ use Traversable;
  * @implements \ArrayAccess<int, Game>
  * @implements \IteratorAggregate<int, Game>
  */
-class GameSchedule implements \ArrayAccess, \Countable, \IteratorAggregate
+class GameSchedule implements ArrayAccess, Countable, IteratorAggregate
 {
     /** @var string $gClassID H4A's internal identification. */
     public string $gClassID;
