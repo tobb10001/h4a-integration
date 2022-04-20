@@ -64,31 +64,6 @@ class UpdaterTest extends TestCase
         $updater->update();
     }
 
-    public function testUpdateIssuesNoticeOnUnsuccessfulRequest(): void
-    {
-        $mockPersistence = $this->getMockPersistence(
-            [
-                new Team([
-                    "id" => 1,
-                    "internalName" => "HSG Eckbachtal 2",
-                    "leagueUrl" => "someUrl"
-                ])
-            ]
-        );
-        $mockHttp = $this->createMock(HttpClient::class);
-
-        $mockHttp->expects($this->once())
-                 ->method("getJson")
-                 ->with("someUrl")
-                 ->will($this->throwException(new HttpException("")));
-
-        $updater = new Updater($mockPersistence, $mockHttp);
-
-        $this->expectNotice();
-
-        $updater->update();
-    }
-
     public function testUpdateUnupdatableTeams(): void
     {
         $mockPersistence = $this->getMockPersistence(

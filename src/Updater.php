@@ -10,6 +10,7 @@ use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
 use Tobb10001\H4aIntegration\Util\HttpClient;
+use Tobb10001\H4aIntegration\Util\UpdateResultlet;
 
 /**
  * Update the the teams registered in the given persistence.
@@ -33,13 +34,13 @@ class Updater
     /**
      * Update all teams in the databse.
      * This function is supposed to be run by a cronjob.
-     * @return array<int, array<string, bool>> A mapping of Team-IDs to success-states.
+     * @return UpdateResult A mapping of Team-IDs to success-states.
      */
-    public function update(): array
+    public function update(): UpdateResult
     {
         $teams = $this->pi->getTeams();
 
-        $result = [];
+        $result = new UpdateResult();
 
         foreach ($teams as $team) {
             if (is_null($team->id)) {
@@ -50,6 +51,7 @@ class Updater
                 );
                 continue;
             }
+
             $result[$team->id] = $this->updateTeam($team);
         }
 
@@ -73,9 +75,9 @@ class Updater
 
     /**
      * Update a single team in the database.
-     * @return array<string, bool> A mapping of league / cup to success status.
+     * @return UpdateResultlet
      */
-    private function updateTeam(Team $team): array
+    private function updateTeam(Team $team): UpdateResultlet
     {
         if (is_null($team->id)) {
             throw new ProgrammingError(
@@ -83,20 +85,16 @@ class Updater
             );
         }
 
-        $result = [];
+        $result = new UpdateResultlet();
 
         if (!is_null($team->leagueUrl)) {
             try {
                 $leagueData = $this->leagueDataFor($team);
                 $this->pi->replaceLeagueData($team->id, $leagueData);
-                $result['league'] = true;
+                $result->leagueStatus = UpdateResultlet::SUCCESS;
             } catch (HttpException $e) {
-                trigger_error(
-                    "Leauge for Team {$team->id} ({$team->internalName}) could"
-                    . " not be updated, due to a failed request. Ignoring."
-                    . " Error Message: {$e->getMessage()}"
-                );
-                $result['league'] = false;
+                $result->leagueStatus = UpdateResultlet::HTTP_EXCEPTION;
+                $result->leagueErrorMessage = "Exception: HttpException: {$e->getMessage()}";
             }
         }
 
