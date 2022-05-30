@@ -56,6 +56,9 @@ league's metadata
 ## Example
 
 ```php
+
+use H4aIntegration\Tobb10001\Updater;
+
 /**
  * Updating Function.
  * You would probably want to hook this function into some kind of cron mechanism.
