@@ -53,6 +53,25 @@ league's metadata
     response. It is only used to communicate between the `PersistenceInterface`
     and the `Updater`.
 
+## Installation
+
+This library is not on Packagist intentionally. However, you can install it\
+via this GitHub-Repo directly using Composer anyways:
+
+```json
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/tobb10001/h4a-integration"
+        }
+    ],
+    "require": {
+        "tobb10001/h4a-integration": "<choose a revision>"
+    }
+}
+```
+
 ## Example
 
 ```php
