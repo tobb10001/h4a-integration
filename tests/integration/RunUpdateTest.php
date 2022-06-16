@@ -9,7 +9,7 @@ use Tobb10001\H4aIntegration\Persistence\SqliteAdapter;
 
 use PHPUnit\Framework\TestCase;
 use SQLite3;
-use Tobb10001\H4aIntegration\Util\HttpClient;
+use Tobb10001\H4aIntegration\Util\HttpClientInterface;
 
 /**
  * @covers Tobb10001\H4aIntegration\Persistence\SqliteAdapter::replaceLeagueData
@@ -35,7 +35,7 @@ class RunUpdateTest extends TestCase
         $adapter->createTables();
 
         // create a mock http client
-        $mockHttpClient = $this->createMock(HttpClient::class);
+        $mockHttpClient = $this->createMock(HttpClientInterface::class);
         // there will be one request for one team
         $json = json_decode(
             file_get_contents(__DIR__ . "/../assets/league_response.json"),

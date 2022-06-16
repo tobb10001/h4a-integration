@@ -3,11 +3,10 @@
 namespace Tobb10001\H4aIntegration;
 
 use PHPUnit\Framework\TestCase;
-use Tobb10001\H4aIntegration\Exceptions\HttpException;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
-use Tobb10001\H4aIntegration\Util\HttpClient;
+use Tobb10001\H4aIntegration\Util\HttpClientInterface;
 
 /**
  * @covers Tobb10001\H4aIntegration\Updater
@@ -42,7 +41,7 @@ class UpdaterTest extends TestCase
                 ])
             ]
         );
-        $mockHttp = $this->createMock(HttpClient::class);
+        $mockHttp = $this->createMock(HttpClientInterface::class);
 
         $mockHttp->expects($this->once())
                  ->method("getJson")
@@ -75,7 +74,7 @@ class UpdaterTest extends TestCase
             ]
         );
         $mockPersistence->expects($this->never())->method("replaceLeagueData");
-        $mockHttp = $this->createMock(HttpClient::class);
+        $mockHttp = $this->createMock(HttpClientInterface::class);
         $mockHttp->expects($this->never())->method("getJson");
 
         $updater = new Updater($mockPersistence, $mockHttp);

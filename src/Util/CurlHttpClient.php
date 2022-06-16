@@ -6,7 +6,7 @@ namespace Tobb10001\H4aIntegration\Util;
 
 use Tobb10001\H4aIntegration\Exceptions\HttpException;
 
-class HttpClient
+class CurlHttpClient implements HttpClientInterface
 {
     /**
      * @param string $url

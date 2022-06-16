@@ -9,7 +9,8 @@ use Tobb10001\H4aIntegration\Exceptions\ProgrammingError;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\Team;
 use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
-use Tobb10001\H4aIntegration\Util\HttpClient;
+use Tobb10001\H4aIntegration\Util\CurlHttpClient;
+use Tobb10001\H4aIntegration\Util\HttpClientInterface;
 use Tobb10001\H4aIntegration\Util\UpdateResultlet;
 
 /**
@@ -18,17 +19,17 @@ use Tobb10001\H4aIntegration\Util\UpdateResultlet;
 class Updater
 {
     private PersistenceInterface $pi;
-    private HttpClient $hc;
+    private HttpClientInterface $hc;
 
     /**
      * @param PersistenceInterface $pi
-     * @param HttpClient $hc If $hc === null, an HttpClient-object is
+     * @param HttpClientInterface $hc If $hc === null, an HttpClient-object is
      * instanciated.
      */
-    public function __construct(PersistenceInterface $pi, ?HttpClient $hc = null)
+    public function __construct(PersistenceInterface $pi, ?HttpClientInterface $hc = null)
     {
         $this->pi = $pi;
-        $this->hc = $hc ?? new HttpClient();
+        $this->hc = $hc ?? new CurlHttpClient();
     }
 
     /**
