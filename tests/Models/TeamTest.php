@@ -74,4 +74,36 @@ class TeamTest extends TestCase
             "cupUrl" => $team->cupUrl
         ]);
     }
+
+    public function testConstructorIdVariants()
+    {
+        $team = new Team([
+            "internalName" => "TeamOne",
+        ]);
+        $this->assertNull($team->id);
+
+        $team = new Team([
+            "internalName" => "TeamOne",
+            "id" => null,
+        ]);
+        $this->assertNull($team->id);
+
+        $team = new Team([
+            "internalName" => "TeamOne",
+            "id" => "",
+        ]);
+        $this->assertNull($team->id);
+
+        $team = new Team([
+            "internalName" => "TeamOne",
+            "id" => 5,
+        ]);
+        $this->assertEquals(5, $team->id);
+
+        $team = new Team([
+            "internalName" => "TeamOne",
+            "id" => "5",
+        ]);
+        $this->assertEquals(5, $team->id);
+    }
 }
