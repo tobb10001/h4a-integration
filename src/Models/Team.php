@@ -57,7 +57,7 @@ class Team
      */
     public function __construct(array $input)
     {
-        $this->id = $input["id"] ?? null;
+        $this->id = array_key_exists('id', $input) ? (int) $input['id'] : null;
         $this->internalName = $input["internalName"];
         $ident = $input["identificators"] ?? null;
         if (is_null($ident)) {
