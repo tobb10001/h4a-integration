@@ -9,6 +9,8 @@ namespace Tobb10001\H4aIntegration\Models;
  */
 class LeagueData
 {
+    public ?LeagueType $type;
+
     /** @var LeagueMetadata $metadata The league's metadata. */
     public LeagueMetadata $metadata;
 
@@ -22,8 +24,13 @@ class LeagueData
      * @param Table $table
      * @param GameSchedule $games
      */
-    public function __construct(array $input, Table $table, GameSchedule $games)
-    {
+    public function __construct(
+        array $input,
+        Table $table,
+        GameSchedule $games,
+        ?LeagueType $type = null,
+    ) {
+        $this->type = $type;
         $this->metadata = new LeagueMetadata($input);
 
         $this->table = $table;
@@ -35,13 +42,13 @@ class LeagueData
      * @param array<mixed> $jsonAssoc
      * @return self
      */
-    public static function fromJson(array $jsonAssoc): self
+    public static function fromJson(array $jsonAssoc, ?LeagueType $type = null): self
     {
         $jsonAssoc = $jsonAssoc[0];
 
         $metadata = $jsonAssoc["head"];
         $table = Table::fromJson($jsonAssoc["content"]["score"]);
         $games = GameSchedule::fromJson($jsonAssoc["content"]["futureGames"]);
-        return new self($metadata, $table, $games);
+        return new self($metadata, $table, $games, $type);
     }
 }

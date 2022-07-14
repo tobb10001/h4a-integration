@@ -10,6 +10,7 @@ use Tobb10001\H4aIntegration\Exceptions\PersistenceError;
 use Tobb10001\H4aIntegration\Models\Game;
 use Tobb10001\H4aIntegration\Models\LeagueData;
 use Tobb10001\H4aIntegration\Models\LeagueMetadata;
+use Tobb10001\H4aIntegration\Models\LeagueType;
 use Tobb10001\H4aIntegration\Models\TabScore;
 use Tobb10001\H4aIntegration\Models\Team;
 
@@ -78,12 +79,18 @@ class SqliteAdapter implements PersistenceInterface
     {
         $exceptionState = $this->db->enableExceptions(true);
 
+        if (is_null($leagueData->type)) {
+            throw new PersistenceError(
+                "Cannot save league data, that does not have a type."
+            );
+        }
+
         try {
             $this->db->exec("BEGIN;");
 
             // delete old data
             $stmt = $this->db->prepare(
-                "DELETE FROM {$this->prefix}leaguemetadata WHERE teamid = :teamid"
+                "DELETE FROM {$this->prefix}leaguemetadata WHERE teamid = :teamid AND type = :type"
             );
             if ($stmt === false) {
                 throw new PersistenceError(
@@ -92,10 +99,11 @@ class SqliteAdapter implements PersistenceInterface
                 );
             }
             $stmt->bindValue("teamid", $teamid);
+            $stmt->bindValue("type", $leagueData->type->value);
             $stmt->execute();
 
             // insert metadata
-            $metadataId = $this->insertMetadata($teamid, $leagueData->metadata);
+            $metadataId = $this->insertMetadata($teamid, $leagueData->type, $leagueData->metadata);
 
             // insert games
             foreach ($leagueData->games as $game) {
@@ -124,12 +132,13 @@ class SqliteAdapter implements PersistenceInterface
 
     /** endregion */
 
-    private function insertMetadata(int $teamid, LeagueMetadata $leagueMetaData): int
+    private function insertMetadata(int $teamid, LeagueType $type, LeagueMetadata $leagueMetaData): int
     {
         $stmt = $this->db->prepare(
             <<<SQL
                 INSERT INTO {$this->prefix}leaguemetadata (
                     teamid,
+                    `type`,
                     name,
                     sname,
                     headline1,
@@ -139,6 +148,7 @@ class SqliteAdapter implements PersistenceInterface
                     scoreShownPerGame
                 ) VALUES (
                     :teamid,
+                    :type,
                     :name,
                     :sname,
                     :headline1,
@@ -158,6 +168,7 @@ class SqliteAdapter implements PersistenceInterface
         }
 
         $stmt->bindValue("teamid", $teamid);
+        $stmt->bindValue("type", $type->value);
         $stmt->bindValue("name", $leagueMetaData->name);
         $stmt->bindValue("sname", $leagueMetaData->sname);
         $stmt->bindValue("headline1", $leagueMetaData->headline1);
@@ -414,9 +425,13 @@ SQL;
     private function queryCreateTableLeagueMetadata(bool $ifNotExists): string
     {
         $_ifNotExists = $ifNotExists ? "IF NOT EXISTS" : "";
+        $types = implode(',', array_map(function ($item) {
+            return "'" . $item->value . "'";
+        }, LeagueType::cases()));
         return <<<SQL
 			CREATE TABLE ${_ifNotExists} {$this->prefix}leaguemetadata (
 				teamid INTEGER NOT NULL,
+                `type` TEXT CHECK( `type` in ({$types})) NOT NULL,
 				id INTEGER PRIMARY KEY AUTOINCREMENT,
 				name VARCHAR NOT NULL,
 				sname VARCHAR NOT NULL,

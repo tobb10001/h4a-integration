@@ -41,9 +41,9 @@ class RunUpdateTest extends TestCase
             file_get_contents(__DIR__ . "/../assets/league_response.json"),
             true
         );
-        $mockHttpClient->expects($this->once())
+        $mockHttpClient->expects($this->exactly(2))
                        ->method("getJson")
-                       ->with("leagueUrl")
+                       ->withConsecutive(["leagueUrl"], ["cupUrl"])
                        ->willReturn($json);
 
         // place a team in the database
@@ -64,8 +64,8 @@ class RunUpdateTest extends TestCase
         $games = $sqlite->query("SELECT COUNT(*) FROM games");
         $tabScores = $sqlite->query("SELECT COUNT(*) FROM tabscores");
 
-        $this->assertEquals(1, $metadata->fetchArray()[0]);
-        $this->assertEquals(12, $tabScores->fetchArray()[0]);
-        $this->assertEquals(22, $games->fetchArray()[0]);
+        $this->assertEquals(2, $metadata->fetchArray()[0]);
+        $this->assertEquals(24, $tabScores->fetchArray()[0]);
+        $this->assertEquals(44, $games->fetchArray()[0]);
     }
 }

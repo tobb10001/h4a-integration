@@ -7,6 +7,7 @@ namespace Tobb10001\H4aIntegration;
 use Tobb10001\H4aIntegration\Exceptions\HttpException;
 use Tobb10001\H4aIntegration\Exceptions\ProgrammingError;
 use Tobb10001\H4aIntegration\Models\LeagueData;
+use Tobb10001\H4aIntegration\Models\LeagueType;
 use Tobb10001\H4aIntegration\Models\Team;
 use Tobb10001\H4aIntegration\Persistence\PersistenceInterface;
 use Tobb10001\H4aIntegration\Util\CurlHttpClient;
@@ -63,15 +64,9 @@ class Updater
      * Use the associated HttpClient to download the league data for the
      * desired team and convert it to a LeagueData object.
      */
-    private function leagueDataFor(Team $team): LeagueData
+    private function dataFromUrl(string $url): LeagueData
     {
-        if (is_null($team->leagueUrl)) {
-            throw new ProgrammingError(
-                __METHOD__ . " was called with a team without leagueUrl: {$team->id}: {$team->internalName}."
-            );
-        }
-        $json = $this->hc->getJson($team->leagueUrl);
-        return LeagueData::fromJson($json);
+        return LeagueData::fromJson($this->hc->getJson($url));
     }
 
     /**
@@ -80,17 +75,29 @@ class Updater
      */
     private function updateTeam(Team $team): UpdateResultlet
     {
+        $result = new UpdateResultlet();
+
         if (is_null($team->id)) {
             throw new ProgrammingError(
-                __METHOD__ . " was called with a team without ID: {$team->internalName}"
+                "Cannot update a team that does not have an ID."
             );
         }
 
-        $result = new UpdateResultlet();
-
         if (!is_null($team->leagueUrl)) {
             try {
-                $leagueData = $this->leagueDataFor($team);
+                $leagueData = $this->dataFromUrl($team->leagueUrl);
+                $leagueData->type = LeagueType::League;
+                $this->pi->replaceLeagueData($team->id, $leagueData);
+                $result->leagueStatus = UpdateResultlet::SUCCESS;
+            } catch (HttpException $e) {
+                $result->leagueStatus = UpdateResultlet::HTTP_EXCEPTION;
+                $result->leagueErrorMessage = "Exception: HttpException: {$e->getMessage()}";
+            }
+        }
+        if (!is_null($team->cupUrl)) {
+            try {
+                $leagueData = $this->dataFromUrl($team->cupUrl);
+                $leagueData->type = LeagueType::Cup;
                 $this->pi->replaceLeagueData($team->id, $leagueData);
                 $result->leagueStatus = UpdateResultlet::SUCCESS;
             } catch (HttpException $e) {
