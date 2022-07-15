@@ -43,15 +43,18 @@ class RunUpdateTest extends TestCase
         );
         $mockHttpClient->expects($this->exactly(2))
                        ->method("getJson")
-                       ->withConsecutive(["leagueUrl"], ["cupUrl"])
-                       ->willReturn($json);
+                       ->withConsecutive(
+                           [
+                           "https://spo.handball4all.de/service/if_g_json.php?ca=0&cl=1&cmd=ps&ct=1&og=1"],
+                           ["https://spo.handball4all.de/service/if_g_json.php?ca=0&cl=1&cmd=ps&og=1&p=1"]
+                       )->willReturn($json);
 
         // place a team in the database
         $adapter->insertTeam(new Team([
             "internalName" => "internalName",
             "identificators" => "identificators",
-            "leagueUrl" => "leagueUrl",
-            "cupUrl" => "cupUrl",
+            "leagueUrl" => "some?lId=1&ogId=1&tId=1",
+            "cupUrl" => "some?pId=1&ogId=1&lId=1",
         ]));
 
         $updater = new Updater($adapter, $mockHttpClient);

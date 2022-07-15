@@ -57,15 +57,15 @@ class TeamTest extends TestCase
             "id" => 1,
             "internalName" => "TeamOne",
             "identificators" => "Team,One",
-            "leagueUrl" => "leagueUrl",
-            "cupUrl" => "cupUrl"
+            "leagueUrl" => "some?lId=1&ogId=1&tId=1",
+            "cupUrl" => "some?pId=1&ogId=1&lId=1"
         ]);
         $this->assertEquals([
             "id" => 1,
             "internalName" => "TeamOne",
             "identificators" => ["Team", "One"],
-            "leagueUrl" => "leagueUrl",
-            "cupUrl" => "cupUrl"
+            "leagueUrl" => "some?lId=1&ogId=1&tId=1",
+            "cupUrl" => "some?pId=1&ogId=1&lId=1"
         ], [
             "id" => $team->id,
             "internalName" => $team->internalName,

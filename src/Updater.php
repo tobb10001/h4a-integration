@@ -85,7 +85,7 @@ class Updater
 
         if (!is_null($team->leagueUrl)) {
             try {
-                $leagueData = $this->dataFromUrl($team->leagueUrl);
+                $leagueData = $this->dataFromUrl($team->apiUrlLeague());
                 $leagueData->type = LeagueType::League;
                 $this->pi->replaceLeagueData($team->id, $leagueData);
                 $result->leagueStatus = UpdateResultlet::SUCCESS;
@@ -96,7 +96,7 @@ class Updater
         }
         if (!is_null($team->cupUrl)) {
             try {
-                $leagueData = $this->dataFromUrl($team->cupUrl);
+                $leagueData = $this->dataFromUrl($team->apiUrlCup());
                 $leagueData->type = LeagueType::Cup;
                 $this->pi->replaceLeagueData($team->id, $leagueData);
                 $result->leagueStatus = UpdateResultlet::SUCCESS;

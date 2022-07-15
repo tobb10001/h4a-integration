@@ -47,8 +47,9 @@ class SqliteAdapterTest extends TestCase
                    ->method("fetchArray")
                    ->willReturn(
                        ["id" => 1, "internalName" => "TeamOne",
-                       "identificators" => "Team, One", "leagueUrl" => "leagueUrl",
-                       "cupUrl" => "cupUrl"],
+                       "identificators" => "Team, One",
+                       "leagueUrl" => "some?lId=1&ogId=1&tId=1",
+                       "cupUrl" => "some?pId=1&ogId=1&lId=1"],
                        false
                    );
 
@@ -95,8 +96,8 @@ class SqliteAdapterTest extends TestCase
         $team = new Team([
             "internalName" => "TeamOne",
             "identificators" => "TeamOne",
-            "leagueUrl" => "leagueUrl",
-            "cupUrl" => "cupUrl",
+            "leagueUrl" => "some?lId=1&ogId=1&tId=1",
+            "cupUrl" => "some?pId=1&ogId=1&lId=1",
         ]);
 
         $adapter = new SqliteAdapter($db);
@@ -116,8 +117,8 @@ class SqliteAdapterTest extends TestCase
         $this->assertEquals([
             "internalName" => "TeamOne",
             "identificators" => ["TeamOne"],
-            "leagueUrl" => "leagueUrl",
-            "cupUrl" => "cupUrl",
+            "leagueUrl" => "some?lId=1&ogId=1&tId=1",
+            "cupUrl" => "some?pId=1&ogId=1&lId=1",
         ], [
             "internalName" => $team->internalName,
             "identificators" => $team->identificators,

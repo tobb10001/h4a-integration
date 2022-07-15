@@ -37,7 +37,7 @@ class UpdaterTest extends TestCase
                 new Team([
                     "id" => 1,
                     "internalName" => "HSG Eckbachtal 2",
-                    "leagueUrl" => "someUrl"
+                    "leagueUrl" => "some?lId=1&ogId=1&tId=1"
                 ])
             ]
         );
@@ -45,7 +45,7 @@ class UpdaterTest extends TestCase
 
         $mockHttp->expects($this->once())
                  ->method("getJson")
-                 ->with("someUrl")
+                 ->with("https://spo.handball4all.de/service/if_g_json.php?ca=0&cl=1&cmd=ps&ct=1&og=1")
                  ->willReturn(
                      json_decode(
                          file_get_contents(__DIR__ . "/assets/league_response.json"),
