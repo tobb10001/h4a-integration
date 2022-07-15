@@ -129,10 +129,14 @@ class SqliteAdapter implements PersistenceInterface
 
         return true;
     }
-
     /** endregion */
 
-    private function insertMetadata(int $teamid, LeagueType $type, LeagueMetadata $leagueMetaData): int
+    /**
+     * Insert a metadata into the database.
+     * @param LeagueMetadata $leagueMetadata The metadata to insert.
+     * @return int The ID of the inserted metadata.
+     */
+    private function insertMetadata(int $teamid, LeagueType $type, LeagueMetadata $leagueMetadata): int
     {
         $stmt = $this->db->prepare(
             <<<SQL
@@ -169,19 +173,24 @@ class SqliteAdapter implements PersistenceInterface
 
         $stmt->bindValue("teamid", $teamid);
         $stmt->bindValue("type", $type->value);
-        $stmt->bindValue("name", $leagueMetaData->name);
-        $stmt->bindValue("sname", $leagueMetaData->sname);
-        $stmt->bindValue("headline1", $leagueMetaData->headline1);
-        $stmt->bindValue("headline2", $leagueMetaData->headline2);
-        $stmt->bindValue("actualized", $leagueMetaData->actualized);
-        $stmt->bindValue("repUrl", $leagueMetaData->repURL);
-        $stmt->bindValue("scoreShownPerGame", $leagueMetaData->scoreShowDataPerGame);
+        $stmt->bindValue("name", $leagueMetadata->name);
+        $stmt->bindValue("sname", $leagueMetadata->sname);
+        $stmt->bindValue("headline1", $leagueMetadata->headline1);
+        $stmt->bindValue("headline2", $leagueMetadata->headline2);
+        $stmt->bindValue("actualized", $leagueMetadata->actualized);
+        $stmt->bindValue("repUrl", $leagueMetadata->repURL);
+        $stmt->bindValue("scoreShownPerGame", $leagueMetadata->scoreShowDataPerGame);
         $stmt->execute();
 
         return $this->db->lastInsertRowID();
     }
 
-    private function insertGame(int $metadataId, Game $game): void
+    /**
+     * Insert a game into the database.
+     * @param Game $game The game to insert.
+     * @return bool True, if the insertion was succsessful, false otherwise.
+     */
+    private function insertGame(int $metadataId, Game $game): bool
     {
         $stmt = $this->db->prepare(<<< SQL
             INSERT INTO {$this->prefix}games (
@@ -280,10 +289,15 @@ class SqliteAdapter implements PersistenceInterface
         $stmt->bindValue("gReferee", $game->gReferee);
         $stmt->bindValue("robotextstate", $game->robotextstate);
 
-        $stmt->execute();
+        return (bool) $stmt->execute();
     }
 
-    private function insertTabScore(int $metadataId, TabScore $tabScore): void
+    /**
+     * Insert a tabscore into the database.
+     * @param TabScore $tabScore The TabScore to insert.
+     * @return bool True, if the insertion was succsessful, false otherwise.
+     */
+    private function insertTabScore(int $metadataId, TabScore $tabScore): bool
     {
         $stmt = $this->db->prepare(<<< SQL
             INSERT INTO {$this->prefix}tabscores (
@@ -350,7 +364,7 @@ class SqliteAdapter implements PersistenceInterface
         $stmt->bindValue("numGoalsShotperGame", $tabScore->numGoalsShotperGame);
         $stmt->bindValue("posCriterion", $tabScore->posCriterion);
 
-        $stmt->execute();
+        return (bool) $stmt->execute();
     }
 
     /**
