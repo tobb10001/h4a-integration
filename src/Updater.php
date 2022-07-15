@@ -51,6 +51,9 @@ class Updater
                         . $team->internalName . "Ignoring the team and continuing.",
                     E_USER_WARNING
                 );
+                $reslet = new UpdateResultlet();
+                $reslet->leagueFailure("Team has no ID.", UpdateResultlet::NOT_TRIED);
+                $reslet->cupFailure("Team has no ID.", UpdateResultlet::NOT_TRIED);
                 continue;
             }
 
@@ -94,6 +97,7 @@ class Updater
                 $result->leagueErrorMessage = "Exception: HttpException: {$e->getMessage()}";
             }
         }
+
         if (!is_null($team->cupUrl)) {
             try {
                 $leagueData = $this->dataFromUrl($team->apiUrlCup());
